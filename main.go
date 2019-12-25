@@ -19,8 +19,16 @@ func main() {
 	_, err := core.ParseImport(names, importMap)
 	utils.CheckError(err)
 
-	enc := json.NewEncoder(os.Stdout)
-	enc.Encode(importMap)
+	str, err := json.MarshalIndent(importMap, "", "  ")
+	utils.CheckError(err)
+
+	f, err := os.Create("imports.json")
+	utils.CheckError(err)
+
+	defer f.Close()
+
+	_, err = f.Write(str)
+	utils.CheckError(err)
 
 	fmt.Println("Done")
 }
