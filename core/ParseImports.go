@@ -72,7 +72,7 @@ func getImports(fileName string) []types.ImportInfo {
 		if len(submatches) != 0 {
 			name := submatches[1]
 			module := submatches[2]
-			filePath := strings.Trim(module, "';")
+			filePath := strings.Trim(module, "'\";")
 			isDir := false
 
 			isRel := utils.IsRel(filePath)
