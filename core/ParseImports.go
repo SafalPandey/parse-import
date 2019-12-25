@@ -13,6 +13,8 @@ import (
 	"../utils"
 )
 
+var pat = regexp.MustCompile(`^import (?P<name>.+) from (?P<module>.+)`)
+
 // ParseImport will mutate the passed map with all the dependent imports and their info
 func ParseImport(files []string, importMap map[string]interface{}) {
 	importMap1 := make(map[string]interface{})
@@ -36,7 +38,7 @@ func ParseImport(files []string, importMap map[string]interface{}) {
 
 func subParse(files []string, importMap map[string]interface{}, grp *sync.WaitGroup) {
 	for _, fileName := range files {
-		infos, _ := getImports(fileName)
+		infos := getImports(fileName)
 
 		localPaths, importMap := updateMap(infos, importMap)
 
@@ -52,8 +54,7 @@ func subParse(files []string, importMap map[string]interface{}, grp *sync.WaitGr
 	grp.Done()
 }
 
-func getImports(fileName string) ([]types.ImportInfo, []string) {
-	var paths []string
+func getImports(fileName string) []types.ImportInfo {
 	var imports []types.ImportInfo
 
 	file, err := os.Open(fileName)
@@ -61,11 +62,9 @@ func getImports(fileName string) ([]types.ImportInfo, []string) {
 
 	defer file.Close()
 
+	lineNum := 1
 	scanner := bufio.NewScanner(file)
 
-	pat := regexp.MustCompile(`^import (?P<name>.+) from (?P<module>.+)`)
-
-	lineNum := 1
 	for scanner.Scan() {
 		line := scanner.Text()
 		submatches := pat.FindStringSubmatch(line)
@@ -105,15 +104,21 @@ func getImports(fileName string) ([]types.ImportInfo, []string) {
 					filePath += ext
 				}
 			}
-			paths = append(paths, filePath)
 
-			imports = append(imports, types.ImportInfo{Line: lineNum, Name: name, Module: module, Path: filePath, IsDir: isDir, ImportedIn: fileName})
+			imports = append(imports, types.ImportInfo{
+				Line:       lineNum,
+				Name:       name,
+				Module:     module,
+				Path:       filePath,
+				IsDir:      isDir,
+				ImportedIn: fileName,
+			})
 		}
 
 		lineNum++
 	}
 
-	return imports, paths
+	return imports
 }
 
 func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]string, map[string]interface{}) {
