@@ -14,7 +14,7 @@ import (
 )
 
 // ParseImport will mutate the passed map with all the dependent imports and their info
-func ParseImport(files []string, importMap map[string]interface{}) ([]types.ImportInfo, error) {
+func ParseImport(files []string, importMap map[string]interface{}) {
 	importMap1 := make(map[string]interface{})
 	importMap2 := make(map[string]interface{})
 
@@ -32,8 +32,6 @@ func ParseImport(files []string, importMap map[string]interface{}) ([]types.Impo
 
 	utils.MergeMaps(importMap1, importMap2)
 	utils.MergeMaps(importMap, importMap1)
-
-	return nil, nil
 }
 
 func subParse(files []string, importMap map[string]interface{}, grp *sync.WaitGroup) {
