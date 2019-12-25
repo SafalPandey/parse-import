@@ -14,7 +14,7 @@ func CheckError(err error) {
 
 // GetExt util
 func GetExt(fpath string, count int) (bool, string, error) {
-	extArr := []string{"", ".tsx", ".ts", ".js", ".json"}
+	extArr := []string{"", ".tsx", ".ts", ".js", ".json", "/index.ts", "/index.tsx", "/index.js"}
 
 	if count >= len(extArr) {
 		return false, "", errors.New("Oops no more extensions available: " + fpath)
