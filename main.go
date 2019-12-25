@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"log"
 	"os"
 
@@ -13,10 +14,22 @@ var outputFile = "./imports.json"
 
 func main() {
 	var names []string
+
+	var filename string
+	var tsconfig string
 	importMap := make(map[string]interface{})
 
-	names = append(names, os.Args[1:]...)
+	flag.StringVar(&filename, "f", "", "File to parse")
+	flag.StringVar(&tsconfig, "tsconfig", "", "Path to tsconfig")
+	flag.Parse()
+
+	names = append(names, filename)
 	names = utils.GetAbs(names)
+
+	if tsconfig != "" {
+		log.Printf("Parsing using tsconfig file: %s", tsconfig)
+		core.FindLocalDirs(tsconfig)
+	}
 
 	log.Printf("Parsing imports for: %s", names)
 	_, err := core.ParseImport(names, importMap)
