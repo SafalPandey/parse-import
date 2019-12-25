@@ -2,12 +2,14 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"os"
 
 	"./core"
 	"./utils"
 )
+
+var outputFile = "./imports.json"
 
 func main() {
 	var names []string
@@ -16,13 +18,15 @@ func main() {
 	names = append(names, os.Args[1:]...)
 	names = utils.GetAbs(names)
 
+	log.Printf("Parsing imports for: %s", names)
 	_, err := core.ParseImport(names, importMap)
 	utils.CheckError(err)
 
 	str, err := json.MarshalIndent(importMap, "", "  ")
 	utils.CheckError(err)
 
-	f, err := os.Create("imports.json")
+	log.Printf("Writing output to: %s", outputFile)
+	f, err := os.Create(outputFile)
 	utils.CheckError(err)
 
 	defer f.Close()
@@ -30,5 +34,6 @@ func main() {
 	_, err = f.Write(str)
 	utils.CheckError(err)
 
-	fmt.Println("Done")
+	log.Printf("Imports detected: %d", len(importMap))
+	log.Printf("Done")
 }
