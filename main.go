@@ -10,17 +10,20 @@ import (
 	"./utils"
 )
 
-var outputFile = "./imports.json"
+var defaultOutputFile = "./imports.json"
 
 func main() {
 	var names []string
 
 	var filename string
 	var tsconfig string
+	var outputFile string
+
 	importMap := make(map[string]interface{})
 
 	flag.StringVar(&filename, "f", "", "File to parse")
 	flag.StringVar(&tsconfig, "tsconfig", "", "Path to tsconfig")
+	flag.StringVar(&outputFile, "o", defaultOutputFile, "Output file path")
 	flag.Parse()
 
 	names = append(names, filename)
