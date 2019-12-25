@@ -115,7 +115,7 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 	var localPaths []string
 	for _, p := range paths {
 		if !path.IsAbs(p.Path) {
-			importMap[p.Path] = types.MapNode{IsLocal: false, Path: p.Path}
+			importMap[p.Path] = types.MapNode{IsLocal: false, Path: p.Path, Info: p}
 		} else {
 			importMap[p.Path] = utils.BuildMap(importMap, strings.Split(p.Path, "/")[1:], p)
 
