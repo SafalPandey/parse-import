@@ -2,7 +2,6 @@ package core
 
 import (
 	"bufio"
-	"fmt"
 	"math"
 	"os"
 	"path"
@@ -52,7 +51,6 @@ func ParseImport(files []string, importMap map[string]interface{}) {
 
 	parseGrp.Wait()
 	close(infoChan)
-	fmt.Println(len(parsedMap))
 }
 
 func parse(files []string, infoChan chan<- []types.ImportInfo, parseGrp *sync.WaitGroup) {
