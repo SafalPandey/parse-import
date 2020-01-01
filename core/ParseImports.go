@@ -2,6 +2,7 @@ package core
 
 import (
 	"bufio"
+	"fmt"
 	"math"
 	"os"
 	"path"
@@ -17,41 +18,60 @@ var pat = regexp.MustCompile(`^import (?P<name>.+) from (?P<module>.+)`)
 
 // ParseImport will mutate the passed map with all the dependent imports and their info
 func ParseImport(files []string, importMap map[string]interface{}) {
-	importMap1 := make(map[string]interface{})
-	importMap2 := make(map[string]interface{})
+	var parseGrp sync.WaitGroup
 
-	halfIndex := int(math.Ceil(float64(len(files)) / 2))
+	parsedMap := make(map[string]bool)
+	infoChan := make(chan []types.ImportInfo)
 
-	var grp sync.WaitGroup
+	for _, file := range files {
+		parsedMap[file] = true
+	}
 
-	grp.Add(1)
-	go subParse(files[:halfIndex], importMap1, &grp)
+	parseGrp.Add(1)
+	go parse(files, infoChan, &parseGrp)
 
-	grp.Add(1)
-	go subParse(files[halfIndex:], importMap2, &grp)
+	// Update import map when new info is avalable in channel
+	go func() {
+		for infos := range infoChan {
 
-	grp.Wait()
+			localPaths, _ := updateMap(infos, importMap)
 
-	utils.MergeMaps(importMap1, importMap2)
-	utils.MergeMaps(importMap, importMap1)
+			localPaths = utils.Filter(localPaths, func(x string) bool {
+				exists := parsedMap[x]
+
+				return !exists
+			})
+
+			for _, x := range localPaths {
+				parsedMap[x] = true
+			}
+
+			go parse(localPaths, infoChan, &parseGrp)
+		}
+	}()
+
+	parseGrp.Wait()
+	close(infoChan)
+	fmt.Println(len(parsedMap))
 }
 
-func subParse(files []string, importMap map[string]interface{}, grp *sync.WaitGroup) {
+func parse(files []string, infoChan chan<- []types.ImportInfo, parseGrp *sync.WaitGroup) {
+	halfIndex := int(math.Ceil(float64(len(files)) / 2))
+
+	parseGrp.Add(1)
+	go subParse(files[:halfIndex], infoChan, parseGrp)
+
+	subParse(files[halfIndex:], infoChan, parseGrp)
+}
+
+func subParse(files []string, infoChan chan<- []types.ImportInfo, parseGrp *sync.WaitGroup) {
 	for _, fileName := range files {
 		infos := getImports(fileName)
 
-		localPaths, importMap := updateMap(infos, importMap)
-
-		localPaths = utils.Filter(localPaths, func(x string) bool {
-			_, ok := importMap[x]
-
-			return ok
-		})
-		ParseImport(localPaths, importMap)
-
+		parseGrp.Add(1)
+		infoChan <- infos
 	}
-
-	grp.Done()
+	parseGrp.Done()
 }
 
 func getImports(fileName string) []types.ImportInfo {
