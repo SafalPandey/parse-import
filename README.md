@@ -40,39 +40,56 @@ $ go run main.go -tsconfig /path/to/tsconfig.json -f /path/to/file.ts -o yoyo.js
 
 Outputs a json file of following format:
 
-```json
-{
-  "/path/to/src/store.ts": {
-    "path": {
-      "to": {
-        "src": {
-          "store.ts": {
-            "IsLocal": true,
-            "Path": "/path/to/src/store.ts",
-            "Info": {
-              "Line": 16,
-              "Path": "/path/to/src/store.ts",
-              "Name": "store",
-              "Module": "'../../store';",
-              "IsDir": false,
-              "ImportedIn": "/path/to/src/services/obs.ts"
+1. Now shows details for each importer if something is imported multiple.
+
+    ```json
+    "redux-persist": {
+        "IsLocal": false,
+        "Path": "redux-persist",
+        "Info": {
+        "Path": "redux-persist",
+        "IsDir": false,
+        "Importers": [
+            {
+            "Line": 13,
+            "Name": "{ Persistor }",
+            "Module": "'redux-persist';",
+            "Path": "/path/to/src/app/utils/crossTabSync.ts"
+            },
+            {
+            "Line": 16,
+            "Name": "{ persistStore, autoRehydrate }",
+            "Module": "'redux-persist';",
+            "Path": "/path/to/src/store.ts"
             }
-          }
+        ]
         }
-      }
     }
-  },
-  "axios": {
-    "IsLocal": false,
-    "Path": "axios",
-    "Info": {
-      "Line": 13,
-      "Path": "axios",
-      "Name": "{ AxiosPromise }",
-      "Module": "'axios';",
-      "IsDir": false,
-      "ImportedIn": "/path/to/src/app/services/auth.ts"
+    ```
+
+2. Local imports json are now consistent with non local imports (No more nested maps)
+
+    ```json
+    "/path/to/src/components/home/common/CalendarIcon.tsx": {
+        "IsLocal": true,
+        "Path": "/path/to/src/components/home/common/CalendarIcon.tsx",
+        "Info": {
+        "Path": "/path/to/src/components/home/common/CalendarIcon.tsx",
+        "IsDir": false,
+        "Importers": [
+            {
+            "Line": 27,
+            "Name": "CalendarIcon",
+            "Module": "'components/home/common/CalendarIcon';",
+            "Path": "/path/to/src/components/home/accountability/time-and-attendance/UpdateTodo.tsx"
+            },
+            {
+            "Line": 10,
+            "Name": "CalendarIcon",
+            "Module": "'../CalendarIcon';",
+            "Path": "/path/to/src/components/home/common/fields/CreateTodo.tsx"
+            }
+        ]
+        }
     }
-  }
-}
-```
+    ```
