@@ -4,19 +4,33 @@ import (
 	"../types"
 )
 
-// BuildMap recursively
-func BuildMap(obj map[string]interface{}, keys []string, p types.ImportInfo) map[string]interface{} {
+// BuildNestedMap recursively
+func BuildNestedMap(obj interface{}, keys []string, p types.ImportInfo) map[string]interface{} {
+	var exists bool
 	newObj := make(map[string]interface{})
-	// newObj = obj
+
+	if obj != nil {
+		obj, exists = obj.(map[string]interface{})[keys[0]]
+	}
 
 	if len(keys) == 1 {
+		var importedIn []types.ImportedIn
+
+		if exists {
+			importedIn = obj.(types.MapNode).Info.Importers
+		}
+
 		newObj[keys[0]] = types.MapNode{
 			IsLocal: true,
 			Path:    p.Path,
-			Info:    p,
+			Info: types.ImportInfo{
+				Path:      p.Path,
+				IsDir:     p.IsDir,
+				Importers: append(p.Importers, importedIn...),
+			},
 		}
 	} else {
-		newObj[keys[0]] = BuildMap(newObj, keys[1:], p)
+		newObj[keys[0]] = BuildNestedMap(obj, keys[1:], p)
 	}
 
 	return newObj
