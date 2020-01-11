@@ -38,12 +38,10 @@ func ParseImport(files []string, importMap map[string]interface{}) {
 			localPaths = utils.Filter(localPaths, func(x string) bool {
 				exists := parsedMap[x]
 
+				parsedMap[x] = true
+
 				return !exists
 			})
-
-			for _, x := range localPaths {
-				parsedMap[x] = true
-			}
 
 			go parse(localPaths, infoChan, &parseGrp)
 		}
