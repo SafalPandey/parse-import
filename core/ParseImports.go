@@ -123,12 +123,16 @@ func getImports(fileName string) []types.ImportInfo {
 			}
 
 			imports = append(imports, types.ImportInfo{
-				Line:       lineNum,
-				Name:       name,
-				Module:     module,
-				Path:       filePath,
-				IsDir:      isDir,
-				ImportedIn: fileName,
+				Path:  importedFilePath,
+				IsDir: isDir,
+				Importers: []types.ImportedIn{
+					{
+						Name:   name,
+						Module: module,
+						Line:   lineNum,
+						Path:   fileName,
+					},
+				},
 			})
 		}
 
