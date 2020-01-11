@@ -67,6 +67,7 @@ func subParse(files []string, infoChan chan<- []types.ImportInfo, parseGrp *sync
 		parseGrp.Add(1)
 		infoChan <- infos
 	}
+
 	parseGrp.Done()
 }
 
@@ -88,17 +89,17 @@ func getImports(fileName string) []types.ImportInfo {
 		if len(submatches) != 0 {
 			name := submatches[1]
 			module := submatches[2]
-			filePath := strings.Trim(module, "'\";")
+			importedFilePath := strings.Trim(module, "'\";")
 			isDir := false
 
-			isRel := utils.IsRel(filePath)
-			pathIsFromBaseDir := utils.StartsWithAnyOf(LocalDirs, filePath)
+			isRel := utils.IsRel(importedFilePath)
+			pathIsFromBaseDir := utils.StartsWithAnyOf(LocalDirs, importedFilePath)
 
 			if isRel || pathIsFromBaseDir {
 				if pathIsFromBaseDir {
-					filePath = path.Join(BaseDirAbsPath, filePath)
+					importedFilePath = path.Join(BaseDirAbsPath, importedFilePath)
 				} else {
-					filePath = path.Join(path.Dir(fileName), filePath)
+					importedFilePath = path.Join(path.Dir(fileName), importedFilePath)
 				}
 
 				i := 0
@@ -106,18 +107,18 @@ func getImports(fileName string) []types.ImportInfo {
 				done := false
 
 				for !done {
-					done, ext, err = utils.GetExt(filePath, i)
+					done, ext, err = utils.GetExt(importedFilePath, i)
 					utils.CheckError(err)
 					i++
 				}
 
-				fi, err := os.Stat(filePath + ext)
+				fi, err := os.Stat(importedFilePath + ext)
 
 				if err == nil && fi.Mode().IsDir() {
 					isDir = true
-					filePath += "/"
+					importedFilePath += "/"
 				} else {
-					filePath += ext
+					importedFilePath += ext
 				}
 			}
 
