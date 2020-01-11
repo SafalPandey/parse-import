@@ -40,7 +40,7 @@ $ go run main.go -tsconfig /path/to/tsconfig.json -f /path/to/file.ts -o yoyo.js
 
 Outputs a json file of following format:
 
-1. Now shows details for each importer if something is imported multiple.
+1. Now shows details for each importer if something is imported multiple times.
 
     ```json
     "redux-persist": {
@@ -67,7 +67,7 @@ Outputs a json file of following format:
     }
     ```
 
-2. Local imports json are now consistent with non local imports (No more nested maps)
+2. Local imports json are now consistent with non local imports. No more nested maps.
 
     ```json
     "/path/to/src/components/home/common/CalendarIcon.tsx": {
