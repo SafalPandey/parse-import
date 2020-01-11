@@ -38,12 +38,10 @@ func ParseImport(files []string, importMap map[string]interface{}) {
 			localPaths = utils.Filter(localPaths, func(x string) bool {
 				exists := parsedMap[x]
 
+				parsedMap[x] = true
+
 				return !exists
 			})
-
-			for _, x := range localPaths {
-				parsedMap[x] = true
-			}
 
 			go parse(localPaths, infoChan, &parseGrp)
 		}
@@ -69,6 +67,7 @@ func subParse(files []string, infoChan chan<- []types.ImportInfo, parseGrp *sync
 		parseGrp.Add(1)
 		infoChan <- infos
 	}
+
 	parseGrp.Done()
 }
 
@@ -90,17 +89,17 @@ func getImports(fileName string) []types.ImportInfo {
 		if len(submatches) != 0 {
 			name := submatches[1]
 			module := submatches[2]
-			filePath := strings.Trim(module, "'\";")
+			importedFilePath := strings.Trim(module, "'\";")
 			isDir := false
 
-			isRel := utils.IsRel(filePath)
-			pathIsFromBaseDir := utils.StartsWithAnyOf(LocalDirs, filePath)
+			isRel := utils.IsRel(importedFilePath)
+			pathIsFromBaseDir := utils.StartsWithAnyOf(LocalDirs, importedFilePath)
 
 			if isRel || pathIsFromBaseDir {
 				if pathIsFromBaseDir {
-					filePath = path.Join(BaseDirAbsPath, filePath)
+					importedFilePath = path.Join(BaseDirAbsPath, importedFilePath)
 				} else {
-					filePath = path.Join(path.Dir(fileName), filePath)
+					importedFilePath = path.Join(path.Dir(fileName), importedFilePath)
 				}
 
 				i := 0
@@ -108,28 +107,32 @@ func getImports(fileName string) []types.ImportInfo {
 				done := false
 
 				for !done {
-					done, ext, err = utils.GetExt(filePath, i)
+					done, ext, err = utils.GetExt(importedFilePath, i)
 					utils.CheckError(err)
 					i++
 				}
 
-				fi, err := os.Stat(filePath + ext)
+				fi, err := os.Stat(importedFilePath + ext)
 
 				if err == nil && fi.Mode().IsDir() {
 					isDir = true
-					filePath += "/"
+					importedFilePath += "/"
 				} else {
-					filePath += ext
+					importedFilePath += ext
 				}
 			}
 
 			imports = append(imports, types.ImportInfo{
-				Line:       lineNum,
-				Name:       name,
-				Module:     module,
-				Path:       filePath,
-				IsDir:      isDir,
-				ImportedIn: fileName,
+				Path:  importedFilePath,
+				IsDir: isDir,
+				Importers: []types.ImportedIn{
+					{
+						Name:   name,
+						Module: module,
+						Line:   lineNum,
+						Path:   fileName,
+					},
+				},
 			})
 		}
 
@@ -142,14 +145,27 @@ func getImports(fileName string) []types.ImportInfo {
 func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]string, map[string]interface{}) {
 	var localPaths []string
 	for _, p := range paths {
-		if !path.IsAbs(p.Path) {
-			importMap[p.Path] = types.MapNode{IsLocal: false, Path: p.Path, Info: p}
-		} else {
-			importMap[p.Path] = utils.BuildMap(importMap, strings.Split(p.Path, "/")[1:], p)
+		isLocal := false
+		var importedIn []types.ImportedIn
 
-			if !p.IsDir {
-				localPaths = append(localPaths, p.Path)
-			}
+		if importMap[p.Path] != nil {
+			importedIn = importMap[p.Path].(types.MapNode).Info.Importers
+		}
+
+		if path.IsAbs(p.Path) {
+			isLocal = true
+			localPaths = append(localPaths, p.Path)
+			// importMap[p.Path] = utils.BuildNestedMap(importMap[p.Path], strings.Split(p.Path, "/")[1:], p)
+		}
+
+		importMap[p.Path] = types.MapNode{
+			IsLocal: isLocal,
+			Path:    p.Path,
+			Info: types.ImportInfo{
+				Path:      p.Path,
+				IsDir:     p.IsDir,
+				Importers: append(p.Importers, importedIn...),
+			},
 		}
 	}
 

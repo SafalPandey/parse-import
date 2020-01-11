@@ -36,6 +36,7 @@ func main() {
 
 	log.Printf("Parsing imports for: %s", names)
 	core.ParseImport(names, importMap)
+	log.Printf("Imports detected: %d", len(importMap))
 
 	str, err := json.MarshalIndent(importMap, "", "  ")
 	utils.CheckError(err)
@@ -49,6 +50,5 @@ func main() {
 	_, err = f.Write(str)
 	utils.CheckError(err)
 
-	log.Printf("Imports detected: %d", len(importMap))
 	log.Printf("Done")
 }
