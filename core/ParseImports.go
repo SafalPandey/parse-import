@@ -82,6 +82,7 @@ func getImports(fileName string) []types.ImportInfo {
 
 	lineNum := 1
 	scanner := bufio.NewScanner(file)
+	scanner.Split(utils.GetSplitterFunc(';'))
 
 	for scanner.Scan() {
 		line := scanner.Text()
