@@ -6,15 +6,12 @@ import (
 	"math"
 	"os"
 	"path"
-	"regexp"
 	"strings"
 	"sync"
 
 	"../types"
 	"../utils"
 )
-
-var pat = regexp.MustCompile(`(?sm)^import (?P<name>.+)\s*from\s+(?P<module>\S+)`)
 
 // ParseImport will mutate the passed map with all the dependent imports and their info
 func ParseImport(files []string, importMap map[string]interface{}) {
@@ -82,16 +79,23 @@ func getImports(fileName string) []types.ImportInfo {
 
 	lineNum := 1
 	scanner := bufio.NewScanner(file)
-	scanner.Split(utils.GetSplitterFunc(';'))
+	scanner.Split(utils.GetSplitterFunc(SplitChar))
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		submatches := pat.FindStringSubmatch(line)
+		submatches := utils.FindNamedMatches(ImportPattern, line)
 
 		if len(submatches) != 0 {
-			name := submatches[1]
-			module := submatches[2]
-			importedFilePath := strings.Trim(module, "'\";")
+			name := submatches["name"]
+			module := submatches["module"]
+			importedFilePath := strings.Join(
+				strings.Split(
+					strings.Trim(module, "'\";"),
+					PathDelimiter,
+				),
+				"/",
+			)
+
 			isDir := false
 
 			isRel := utils.IsRel(importedFilePath)
@@ -109,7 +113,7 @@ func getImports(fileName string) []types.ImportInfo {
 				done := false
 
 				for !done {
-					done, ext, err = utils.GetExt(importedFilePath, i)
+					done, ext, err = GetExt(importedFilePath, i)
 					utils.CheckError(err)
 					i++
 				}
