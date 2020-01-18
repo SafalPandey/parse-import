@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"path"
+	"regexp"
 	"strings"
 
 	"../utils"
@@ -14,6 +15,19 @@ var LocalDirs []string
 
 // BaseDirAbsPath global var
 var BaseDirAbsPath string
+
+var SplitChar byte
+var Language string
+var Extensions []string
+var PathDelimiter string
+var ImportPattern *regexp.Regexp
+
+func ComputeConstants() {
+	SplitChar = SplitCharMap[Language]
+	Extensions = ExtensionMap[Language]
+	PathDelimiter = PathDelimiterMap[Language]
+	ImportPattern = regexp.MustCompile(ImportPatternMap[Language])
+}
 
 // FindLocalDirs util
 func FindLocalDirs(tsconfigPath string) {
