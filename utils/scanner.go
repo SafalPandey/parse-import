@@ -2,6 +2,11 @@ package utils
 
 import "bufio"
 
+// GetSplitterFunc returns a splitter function based for the provided character.
+// The returned splitter function can then be passed to scanner.Split function.
+//
+// The splitter function returned is based on following example from official Go documentation:
+// https://golang.org/pkg/bufio/#example_Scanner_emptyFinalToken
 func GetSplitterFunc(char byte) func([]byte, bool) (int, []byte, error) {
 	return func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 
