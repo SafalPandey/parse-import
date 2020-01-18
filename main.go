@@ -22,9 +22,12 @@ func main() {
 	importMap := make(map[string]interface{})
 
 	flag.StringVar(&filename, "f", "", "File to parse")
+	flag.StringVar(&core.Language, "l", "ts", "Language to parse")
 	flag.StringVar(&tsconfig, "tsconfig", "", "Path to tsconfig")
 	flag.StringVar(&outputFile, "o", defaultOutputFile, "Output file path")
 	flag.Parse()
+
+	core.ComputeConstants()
 
 	names = append(names, filename)
 	names = utils.GetAbs(names)
