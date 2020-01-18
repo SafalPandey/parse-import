@@ -13,8 +13,7 @@ import (
 	"../utils"
 )
 
-var pat = regexp.MustCompile(`\bimport (?P<name>(?:.*\n*)+) from (?P<module>(?:.*\n*)+)`)
-var commentPat = regexp.MustCompile(`// *import`)
+var pat = regexp.MustCompile(`(?sm)^import (?P<name>.+)\s*from\s+(?P<module>\S+)`)
 
 // ParseImport will mutate the passed map with all the dependent imports and their info
 func ParseImport(files []string, importMap map[string]interface{}) {
@@ -87,9 +86,8 @@ func getImports(fileName string) []types.ImportInfo {
 	for scanner.Scan() {
 		line := scanner.Text()
 		submatches := pat.FindStringSubmatch(line)
-		commentMatch := commentPat.FindString(line)
 
-		if len(submatches) != 0 && commentMatch == "" {
+		if len(submatches) != 0 {
 			name := submatches[1]
 			module := submatches[2]
 			importedFilePath := strings.Trim(module, "'\";")
