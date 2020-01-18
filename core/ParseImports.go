@@ -2,6 +2,7 @@ package core
 
 import (
 	"bufio"
+	"errors"
 	"math"
 	"os"
 	"path"
@@ -171,4 +172,20 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 	}
 
 	return localPaths, importMap
+}
+
+func GetExt(fpath string, count int) (bool, string, error) {
+	extArr := Extensions
+
+	if count >= len(extArr) {
+		return false, "", errors.New("Oops no more extensions available: " + fpath)
+	}
+
+	_, err := os.Stat(fpath + extArr[count])
+
+	if err != nil {
+		return false, extArr[count], nil
+	}
+
+	return true, extArr[count], nil
 }
