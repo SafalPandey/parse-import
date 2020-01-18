@@ -13,7 +13,7 @@ import (
 	"../utils"
 )
 
-var pat = regexp.MustCompile(`^import (?P<name>.+) from (?P<module>.+)`)
+var pat = regexp.MustCompile(`(?sm)^import (?P<name>.+)\s*from\s+(?P<module>\S+)`)
 
 // ParseImport will mutate the passed map with all the dependent imports and their info
 func ParseImport(files []string, importMap map[string]interface{}) {
@@ -81,6 +81,7 @@ func getImports(fileName string) []types.ImportInfo {
 
 	lineNum := 1
 	scanner := bufio.NewScanner(file)
+	scanner.Split(utils.GetSplitterFunc(';'))
 
 	for scanner.Scan() {
 		line := scanner.Text()
