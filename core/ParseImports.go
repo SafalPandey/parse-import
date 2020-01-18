@@ -87,8 +87,9 @@ func getImports(fileName string) []types.ImportInfo {
 	for scanner.Scan() {
 		line := scanner.Text()
 		submatches := pat.FindStringSubmatch(line)
+		commentMatch := commentPat.FindString(line)
 
-		if len(submatches) != 0 {
+		if len(submatches) != 0 && commentMatch == "" {
 			name := submatches[1]
 			module := submatches[2]
 			importedFilePath := strings.Trim(module, "'\";")
