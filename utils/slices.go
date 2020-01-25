@@ -17,9 +17,9 @@ func Filter(a []string, condition func(string) bool) []string {
 }
 
 // StartsWithAnyOf will return true and the matched element if a string starts with any element in the given array
-func StartsWithAnyOf(a []string, s string) (bool, string) {
+func StartsWithAnyOf(a []string, s string, suffix string) (bool, string) {
 	for _, element := range a {
-		if strings.HasPrefix(s, element) {
+		if strings.HasPrefix(s, element+suffix) || s == element {
 			return true, element
 		}
 	}
