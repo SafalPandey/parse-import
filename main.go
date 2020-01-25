@@ -18,20 +18,30 @@ func main() {
 	var filename string
 	var tsconfig string
 	var outputFile string
+	var entryPoint string
 
 	importMap := make(map[string]interface{})
 
 	flag.StringVar(&filename, "f", "", "File to parse")
-	flag.StringVar(&tsconfig, "tsconfig", "", "Path to tsconfig")
+	flag.StringVar(&core.Language, "l", "ts", "Language to parse")
+	flag.StringVar(&entryPoint, "entryPoint", "", "Path to main.py")
+	flag.StringVar(&tsconfig, "tsconfig", "", "Path to tsconfig file")
 	flag.StringVar(&outputFile, "o", defaultOutputFile, "Output file path")
 	flag.Parse()
+
+	core.ComputeConstants()
 
 	names = append(names, filename)
 	names = utils.GetAbs(names)
 
-	if tsconfig != "" {
+	if tsconfig != "" && core.Language == "ts" {
 		log.Printf("Parsing using tsconfig file: %s", tsconfig)
 		core.FindLocalDirs(tsconfig)
+	}
+
+	if entryPoint != "" {
+		log.Printf("Parsing using entry point file: %s", entryPoint)
+		core.FindLocalDirs(entryPoint)
 	}
 
 	log.Printf("Parsing imports for: %s", names)

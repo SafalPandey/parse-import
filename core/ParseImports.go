@@ -2,18 +2,16 @@ package core
 
 import (
 	"bufio"
+	"errors"
 	"math"
 	"os"
 	"path"
-	"regexp"
 	"strings"
 	"sync"
 
 	"../types"
 	"../utils"
 )
-
-var pat = regexp.MustCompile(`(?sm)^import (?P<name>.+)\s*from\s+(?P<module>\S+)`)
 
 // ParseImport will mutate the passed map with all the dependent imports and their info
 func ParseImport(files []string, importMap map[string]interface{}) {
@@ -81,24 +79,31 @@ func getImports(fileName string) []types.ImportInfo {
 
 	lineNum := 1
 	scanner := bufio.NewScanner(file)
-	scanner.Split(utils.GetSplitterFunc(';'))
+	scanner.Split(utils.GetSplitterFunc(SplitChar))
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		submatches := pat.FindStringSubmatch(line)
+		submatches := utils.FindNamedMatches(ImportPattern, line)
 
 		if len(submatches) != 0 {
-			name := submatches[1]
-			module := submatches[2]
-			importedFilePath := strings.Trim(module, "'\";")
+			name := submatches["name"]
+			module := submatches["module"]
+			importedFilePath := strings.Join(
+				strings.Split(
+					strings.Trim(module, "'\";"),
+					PathDelimiter,
+				),
+				"/",
+			)
+
 			isDir := false
 
 			isRel := utils.IsRel(importedFilePath)
-			pathIsFromBaseDir := utils.StartsWithAnyOf(LocalDirs, importedFilePath)
+			pathIsFromBaseDir, baseDir := utils.StartsWithAnyOf(LocalDirs, importedFilePath+PathDelimiter)
 
 			if isRel || pathIsFromBaseDir {
 				if pathIsFromBaseDir {
-					importedFilePath = path.Join(BaseDirAbsPath, importedFilePath)
+					importedFilePath = path.Join(BaseDirAbsPathMap[baseDir], importedFilePath)
 				} else {
 					importedFilePath = path.Join(path.Dir(fileName), importedFilePath)
 				}
@@ -108,14 +113,14 @@ func getImports(fileName string) []types.ImportInfo {
 				done := false
 
 				for !done {
-					done, ext, err = utils.GetExt(importedFilePath, i)
+					done, ext, err = GetExt(importedFilePath, i)
 					utils.CheckError(err)
 					i++
 				}
 
 				fi, err := os.Stat(importedFilePath + ext)
 
-				if err == nil && fi.Mode().IsDir() {
+				if err == nil && fi.IsDir() {
 					isDir = true
 					importedFilePath += "/"
 				} else {
@@ -171,4 +176,18 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 	}
 
 	return localPaths, importMap
+}
+
+func GetExt(fpath string, count int) (bool, string, error) {
+	if count >= len(Extensions) {
+		return false, "", errors.New("Oops no more extensions available: " + fpath)
+	}
+
+	_, err := os.Stat(fpath + Extensions[count])
+
+	if err != nil {
+		return false, Extensions[count], nil
+	}
+
+	return true, Extensions[count], nil
 }

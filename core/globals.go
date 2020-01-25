@@ -1,9 +1,9 @@
 package core
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"path"
+	"regexp"
 	"strings"
 
 	"../utils"
@@ -13,20 +13,32 @@ import (
 var LocalDirs []string
 
 // BaseDirAbsPath global var
-var BaseDirAbsPath string
+var BaseDirAbsPathMap = make(map[string]string)
 
-// FindLocalDirs util
-func FindLocalDirs(tsconfigPath string) {
-	data, err := ioutil.ReadFile(tsconfigPath)
+var SplitChar byte
+var Language string
+var Extensions []string
+var PathDelimiter string
+var ImportPattern *regexp.Regexp
+var FindLocalDirs func(string)
+
+func ComputeConstants() {
+	SplitChar = SplitCharMap[Language]
+	Extensions = ExtensionMap[Language]
+	PathDelimiter = PathDelimiterMap[Language]
+	FindLocalDirs = FindLocalDirsMap[Language]
+	ImportPattern = regexp.MustCompile(ImportPatternMap[Language])
+}
+
+func SetLocalDirs(entryPoint string) {
+	baseDirAbsPath := path.Dir(entryPoint)
+
+	files, err := ioutil.ReadDir(baseDirAbsPath)
 	utils.CheckError(err)
 
-	var obj map[string]map[string]string
-	json.Unmarshal(data, &obj)
-
-	BaseDirAbsPath = path.Join(path.Dir(tsconfigPath), obj["compilerOptions"]["baseUrl"])
-
-	files, _ := ioutil.ReadDir(BaseDirAbsPath)
 	for _, file := range files {
-		LocalDirs = append(LocalDirs, strings.Split(file.Name(), ".")[0])
+		localDir := strings.Split(file.Name(), ".")[0]
+		LocalDirs = append(LocalDirs, localDir)
+		BaseDirAbsPathMap[localDir] = baseDirAbsPath
 	}
 }
