@@ -16,13 +16,13 @@ func Filter(a []string, condition func(string) bool) []string {
 	return a
 }
 
-// StartsWithAnyOf will return true if an string starts with any element in the given array
-func StartsWithAnyOf(a []string, s string) bool {
+// StartsWithAnyOf will return true and the matched element if a string starts with any element in the given array
+func StartsWithAnyOf(a []string, s string) (bool, string) {
 	for _, element := range a {
 		if strings.HasPrefix(s, element) {
-			return true
+			return true, element
 		}
 	}
 
-	return false
+	return false, ""
 }
