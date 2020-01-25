@@ -137,7 +137,7 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
 
 **Note:** Supports relative imports in typescript/javascript by default.
 
-#### Supports tsconfig `baseUrl` property in Typescript
+### Supports tsconfig `baseUrl` property in Typescript
 
 ```bash
 $ go run main.go -tsconfig /path/to/tsconfig.json -f /path/to/src/index.tsx
