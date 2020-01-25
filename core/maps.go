@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"path"
-	"strings"
 
 	"../utils"
 )
@@ -37,13 +36,9 @@ var FindLocalDirsMap = map[string]func(string){
 		var obj map[string]map[string]string
 		json.Unmarshal(data, &obj)
 
-		baseDirAbsPath := path.Join(path.Dir(tsconfigPath), obj["compilerOptions"]["baseUrl"])
-
-		files, _ := ioutil.ReadDir(baseDirAbsPath)
-		for _, file := range files {
-			localDir := strings.Split(file.Name(), ".")[0]
-			LocalDirs = append(LocalDirs, localDir)
-			BaseDirAbsPathMap[localDir] = baseDirAbsPath
-		}
+		entryPoint := path.Join(path.Join(path.Dir(tsconfigPath), obj["compilerOptions"]["baseUrl"]), "index.ts")
+		SetLocalDirs(entryPoint)
 	},
+
+	"py": SetLocalDirs,
 }
