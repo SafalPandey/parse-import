@@ -120,7 +120,7 @@ func getImports(fileName string) []types.ImportInfo {
 
 				fi, err := os.Stat(importedFilePath + ext)
 
-				if err == nil && fi.Mode().IsDir() {
+				if err == nil && fi.IsDir() {
 					isDir = true
 					importedFilePath += "/"
 				} else {
@@ -179,17 +179,15 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 }
 
 func GetExt(fpath string, count int) (bool, string, error) {
-	extArr := Extensions
-
-	if count >= len(extArr) {
+	if count >= len(Extensions) {
 		return false, "", errors.New("Oops no more extensions available: " + fpath)
 	}
 
-	_, err := os.Stat(fpath + extArr[count])
+	_, err := os.Stat(fpath + Extensions[count])
 
 	if err != nil {
-		return false, extArr[count], nil
+		return false, Extensions[count], nil
 	}
 
-	return true, extArr[count], nil
+	return true, Extensions[count], nil
 }
