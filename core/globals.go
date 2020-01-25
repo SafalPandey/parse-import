@@ -1,7 +1,12 @@
 package core
 
 import (
+	"io/ioutil"
+	"path"
 	"regexp"
+	"strings"
+
+	"../utils"
 )
 
 // LocalDirs global var
@@ -23,4 +28,17 @@ func ComputeConstants() {
 	PathDelimiter = PathDelimiterMap[Language]
 	FindLocalDirs = FindLocalDirsMap[Language]
 	ImportPattern = regexp.MustCompile(ImportPatternMap[Language])
+}
+
+func SetLocalDirs(entryPoint string) {
+	baseDirAbsPath := path.Dir(entryPoint)
+
+	files, err := ioutil.ReadDir(baseDirAbsPath)
+	utils.CheckError(err)
+
+	for _, file := range files {
+		localDir := strings.Split(file.Name(), ".")[0]
+		LocalDirs = append(LocalDirs, localDir)
+		BaseDirAbsPathMap[localDir] = baseDirAbsPath
+	}
 }
