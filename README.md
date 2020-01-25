@@ -14,13 +14,15 @@ $ go run main.go -f /path/to/file.ts
 2019/12/25 16:26:45 Done
 ```
 
-## Supports multiple languages
+## Features
+
+### Supports multiple languages
 
 Currently, **parse-import** supports `ts` and `python` and is open to contributions for other languages. :)
 
-## Recursively parses through the local imports
+### Recursively parses through the local imports
 
-### Use `entrypoint` flag to recursively parse local imports in Python
+#### Use `entrypoint` flag to recursively parse local imports in Python
 
 ```bash
 go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
@@ -135,7 +137,7 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
 
 **Note:** Supports relative imports in typescript/javascript by default.
 
-### Supports tsconfig `baseUrl` property in Typescript
+#### Supports tsconfig `baseUrl` property in Typescript
 
 ```bash
 $ go run main.go -tsconfig /path/to/tsconfig.json -f /path/to/src/index.tsx
@@ -146,7 +148,7 @@ $ go run main.go -tsconfig /path/to/tsconfig.json -f /path/to/src/index.tsx
 2020/01/25 17:12:55 Done
 ```
 
-## Supports custom output file path
+### Supports custom output file path
 
 ```bash
 $ go run main.go -tsconfig /path/to/tsconfig.json -f /path/to/file.ts -o yoyo.json
