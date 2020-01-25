@@ -16,7 +16,7 @@ var ImportPatternMap = map[string]string{
 
 var ExtensionMap = map[string][]string{
 	"ts": []string{"/index.ts", "/index.tsx", "/index.js", "", ".tsx", ".ts", ".js", ".json"},
-	"py": []string{".py"},
+	"py": []string{".py", "main.py", ""},
 }
 
 var SplitCharMap = map[string]byte{
