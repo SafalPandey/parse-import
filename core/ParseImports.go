@@ -99,11 +99,11 @@ func getImports(fileName string) []types.ImportInfo {
 			isDir := false
 
 			isRel := utils.IsRel(importedFilePath)
-			pathIsFromBaseDir := utils.StartsWithAnyOf(LocalDirs, importedFilePath)
+			pathIsFromBaseDir, baseDir := utils.StartsWithAnyOf(LocalDirs, importedFilePath+PathDelimiter)
 
 			if isRel || pathIsFromBaseDir {
 				if pathIsFromBaseDir {
-					importedFilePath = path.Join(BaseDirAbsPath, importedFilePath)
+					importedFilePath = path.Join(BaseDirAbsPathMap[baseDir], importedFilePath)
 				} else {
 					importedFilePath = path.Join(path.Dir(fileName), importedFilePath)
 				}
