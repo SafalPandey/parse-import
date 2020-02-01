@@ -33,7 +33,7 @@ func ParseImport(files []string, importMap map[string]interface{}) {
 
 			localPaths, _ := updateMap(infos, importMap)
 
-			localPaths = utils.Filter(localPaths, func(x string) bool {
+			localPaths = utils.FilterString(localPaths, func(x string) bool {
 				exists := parsedMap[x]
 
 				parsedMap[x] = true

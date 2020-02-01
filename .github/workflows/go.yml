@@ -26,3 +26,8 @@ jobs:
 
     - name: Build
       run: go build -v .
+
+    - name: Test
+      run: |
+        shopt -s globstar
+        go test -v  **/*_test.go
