@@ -3,7 +3,7 @@ package utils
 import "strings"
 
 // Filter will filter a slice of string using given condition
-func Filter(a []string, condition func(string) bool) []string {
+func FilterString(a []string, condition func(string) bool) []string {
 	n := 0
 	for _, x := range a {
 		if condition(x) {
