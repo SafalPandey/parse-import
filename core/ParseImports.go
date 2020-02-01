@@ -113,7 +113,7 @@ func getImports(fileName string) []types.ImportInfo {
 				done := false
 
 				for !done {
-					done, ext, err = GetExt(importedFilePath, i)
+					done, ext, err = getExt(importedFilePath, i)
 					utils.CheckError(err)
 					i++
 				}
@@ -178,7 +178,7 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 	return localPaths, importMap
 }
 
-func GetExt(fpath string, count int) (bool, string, error) {
+func getExt(fpath string, count int) (bool, string, error) {
 	if count >= len(Extensions) {
 		return false, "", errors.New("Oops no more extensions available: " + fpath)
 	}

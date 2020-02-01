@@ -1,8 +1,10 @@
 package utils
 
-import "strings"
+import (
+	"strings"
+)
 
-// Filter will filter a slice of string using given condition
+// FilterString will filter a slice of string using given condition
 func FilterString(a []string, condition func(string) bool) []string {
 	n := 0
 	for _, x := range a {

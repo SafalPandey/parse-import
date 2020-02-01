@@ -12,16 +12,28 @@ import (
 // LocalDirs global var
 var LocalDirs []string
 
-// BaseDirAbsPath global var
+// BaseDirAbsPathMap global var
 var BaseDirAbsPathMap = make(map[string]string)
 
+// SplitChar global constant
 var SplitChar byte
+
+// Language global constant
 var Language string
+
+// Extensions global constant
 var Extensions []string
+
+// PathDelimiter global constant
 var PathDelimiter string
+
+// ImportPattern global constant
 var ImportPattern *regexp.Regexp
+
+// FindLocalDirs global constant
 var FindLocalDirs func(string)
 
+// ComputeConstants computes global constants
 func ComputeConstants() {
 	SplitChar = SplitCharMap[Language]
 	Extensions = ExtensionMap[Language]
@@ -30,6 +42,7 @@ func ComputeConstants() {
 	ImportPattern = regexp.MustCompile(ImportPatternMap[Language])
 }
 
+// SetLocalDirs sets global constant LocalDirs and BaseDirAbsPathMap
 func SetLocalDirs(entryPoint string) {
 	baseDirAbsPath := path.Dir(entryPoint)
 

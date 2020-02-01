@@ -51,9 +51,11 @@ func MergeMaps(map1 map[string]interface{}, map2 map[string]interface{}) map[str
 
 // NormalizeMap wil try to normalize a map down using it's key
 func NormalizeMap(obj map[string]interface{}) map[string]interface{} {
+	// TODO: Implement logic to normalize given object
 	return obj
 }
 
+// FindNamedMatches creates a map of submatches and returns the map.
 func FindNamedMatches(regex *regexp.Regexp, str string) map[string]string {
 	match := regex.FindStringSubmatch(str)
 	subexpNames := regex.SubexpNames()
