@@ -31,5 +31,3 @@ jobs:
       run: |
         shopt -s globstar
         go test -v  **/*_test.go
-
-
