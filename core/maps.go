@@ -13,6 +13,7 @@ var ImportPatternMap = map[string][]string{
 	"ts": []string{
 		`^import (?P<name>.+)\s*from\s+(?P<module>\S+)`,
 		`^\s*(?:const|let|var)\s+(?P<name>\S+)\s*=\s*require\((?P<module>\S+)\)`,
+		`^\s*(?:const|let|var)\s+(?P<name>\S+)\s*=\s*\S+\(\(\)\s*=>\s*import\((?P<module>\S+)\)\)`,
 	},
 	"py": []string{
 		`(?sm)(?:^import\s+(?P<module>\S+)`,

@@ -150,6 +150,7 @@ func getImports(fileName string) []types.ImportInfo {
 
 func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]string, map[string]interface{}) {
 	var localPaths []string
+
 	for _, p := range paths {
 		isLocal := false
 		var importedIn []types.ImportedIn
