@@ -9,9 +9,15 @@ import (
 )
 
 // ImportPatternMap map constant
-var ImportPatternMap = map[string]string{
-	"ts": `(?sm)(?:^import (?P<name>.+)\s*from\s+(?P<module>\S+))|(?:^\s*(?:const|let|var)\s*(?P<name>\S+)\s*=\s*require\((?P<module>\S+)\))`,
-	"py": `(?sm)(?:^import\s+(?P<module>\S+))|(?:^from (?P<module>\S+)\s*import\s+(?P<name>\S+))`,
+var ImportPatternMap = map[string][]string{
+	"ts": []string{
+		`^import (?P<name>.+)\s*from\s+(?P<module>\S+)`,
+		`^\s*(?:const|let|var)\s+(?P<name>\S+)\s*=\s*require\((?P<module>\S+)\)`,
+	},
+	"py": []string{
+		`(?sm)(?:^import\s+(?P<module>\S+)`,
+		`^from (?P<module>\S+)\s*import\s+(?P<name>\S+)`,
+	},
 }
 
 // ExtensionMap map constant
