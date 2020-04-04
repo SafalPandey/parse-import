@@ -39,7 +39,7 @@ func ComputeConstants() {
 	Extensions = ExtensionMap[Language]
 	PathDelimiter = PathDelimiterMap[Language]
 	FindLocalDirs = FindLocalDirsMap[Language]
-	ImportPattern = regexp.MustCompile(ImportPatternMap[Language])
+	ImportPattern = regexp.MustCompile(combineRegExp(ImportPatternMap[Language]))
 }
 
 // SetLocalDirs sets global constant LocalDirs and BaseDirAbsPathMap
