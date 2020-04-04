@@ -55,3 +55,17 @@ func SetLocalDirs(entryPoint string) {
 		BaseDirAbsPathMap[localDir] = baseDirAbsPath
 	}
 }
+
+func combineRegExp(re []string) string {
+	result := "(?sm)"
+
+	for i, re := range re {
+		if i != 0 {
+			result += "|"
+		}
+
+		result += "(?:" + re + ")"
+	}
+
+	return result
+}
