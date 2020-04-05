@@ -15,6 +15,7 @@ var defaultOutputFile = "./imports.json"
 func main() {
 	var names []string
 
+	var showHelp bool
 	var filename string
 	var tsconfig string
 	var outputFile string
@@ -22,12 +23,19 @@ func main() {
 
 	importMap := make(map[string]interface{})
 
+	flag.BoolVar(&showHelp, "h", false, "Show usage")
 	flag.StringVar(&filename, "f", "", "File to parse")
 	flag.StringVar(&core.Language, "l", "ts", "Language to parse")
 	flag.StringVar(&entryPoint, "entry-point", "", "Path to main.py")
 	flag.StringVar(&tsconfig, "tsconfig", "", "Path to tsconfig file")
 	flag.StringVar(&outputFile, "o", defaultOutputFile, "Output file path")
 	flag.Parse()
+
+	if showHelp {
+		flag.Usage()
+
+		return
+	}
 
 	core.ComputeConstants()
 
