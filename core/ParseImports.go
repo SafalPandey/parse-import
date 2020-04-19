@@ -163,6 +163,9 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 	return localPaths, importMap
 }
 
+// Iterates over Extensions (languageSpecific) and
+// returns filePath and isDir boolean if a file exists
+// throws error if no file is found.
 func getFilePath(fpath string) (string, bool) {
 	for i := range Extensions {
 		path := fpath + Extensions[i]
