@@ -88,7 +88,8 @@ func getImports(fileName string) []types.ImportInfo {
 		if len(submatches) != 0 {
 			name := submatches["name"]
 			module := submatches["module"]
-			importedFilePath := strings.Join(
+
+			modulePath := strings.Join(
 				strings.Split(
 					strings.Trim(module, "'\";"),
 					PathDelimiter,
@@ -98,30 +99,21 @@ func getImports(fileName string) []types.ImportInfo {
 
 			isDir := false
 
-			isRel := utils.IsRel(importedFilePath)
-			pathIsFromBaseDir, baseDir := utils.StartsWithAnyOf(LocalDirs, importedFilePath, "/")
+			isRel := utils.IsRel(modulePath)
+			pathIsFromBaseDir, baseDir := utils.StartsWithAnyOf(LocalDirs, modulePath, "/")
 
 			if isRel || pathIsFromBaseDir {
 				if pathIsFromBaseDir {
-					importedFilePath = path.Join(BaseDirAbsPathMap[baseDir], importedFilePath)
+					modulePath = path.Join(BaseDirAbsPathMap[baseDir], modulePath)
 				} else {
-					importedFilePath = path.Join(path.Dir(fileName), importedFilePath)
+					modulePath = path.Join(path.Dir(fileName), modulePath)
 				}
 
-				ext := getExt(importedFilePath)
-
-				fi, err := os.Stat(importedFilePath + ext)
-
-				if err == nil && fi.IsDir() {
-					isDir = true
-					importedFilePath += "/"
-				} else {
-					importedFilePath += ext
-				}
+				modulePath, isDir = getFilePath(modulePath)
 			}
 
 			imports = append(imports, types.ImportInfo{
-				Path:  importedFilePath,
+				Path:  modulePath,
 				IsDir: isDir,
 				Importers: []types.ImportedIn{
 					{
