@@ -155,7 +155,7 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 			Info: types.ImportInfo{
 				Path:      p.Path,
 				IsDir:     p.IsDir,
-				Importers: append(p.Importers, importedIn...),
+				Importers: append(importedIn, p.Importers...),
 			},
 		}
 	}
