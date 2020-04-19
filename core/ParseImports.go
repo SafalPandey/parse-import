@@ -171,12 +171,14 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 	return localPaths, importMap
 }
 
-func getExt(fpath string) string {
+func getFilePath(fpath string) (string, bool) {
 	for i := range Extensions {
-		_, err := os.Stat(fpath + Extensions[i])
+		path := fpath + Extensions[i]
+
+		fi, err := os.Stat(path)
 
 		if err == nil {
-			return Extensions[i]
+			return path, fi.IsDir()
 		}
 	}
 
