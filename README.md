@@ -1,5 +1,8 @@
 # parse-import
 
+![Build & Test](https://github.com/SafalPandey/parse-import/workflows/Build%20&%20Test/badge.svg)
+![Tag & Release](https://github.com/SafalPandey/parse-import/workflows/Tag%20&%20Release/badge.svg)
+
 A tool to help parse imports and all the dependencies associated with a file.
 
 ## Usage
