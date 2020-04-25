@@ -10,8 +10,8 @@
     "parse-import": "./node_modules/.bin/parse-import"
   },
   "scripts": {
-    "postinstall": "go-npm install",
-    "preuninstall": "go-npm uninstall",
+    "postinstall": "./scripts/go-npm install",
+    "preuninstall": "./scripts/go-npm uninstall",
     "test": "go build -o parse-import && ./parse-import -h"
   },
   "goBinary": {
@@ -30,6 +30,8 @@
   },
   "homepage": "https://github.com/SafalPandey/parse-import#readme",
   "dependencies": {
-    "go-npm": "^0.1.9"
+    "mkdirp": "^0.5.1",
+    "request": "^2.81.0",
+    "tar": "^2.2.1"
   }
 }
