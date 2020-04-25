@@ -10,5 +10,10 @@ echo -e "\nLast tag: $last_master_tag\n"
 bumped_tag=$(semver bump patch "$last_master_tag")
 echo -e "\nBumped tag: $bumped_tag\n"
 
+sed -i -E "s/\"version\":.*/\"version\": \"$bumped_tag\",/" package.json
+
+git commit -m "$bumped_tag
+
+[skip release]"
 git tag "$bumped_tag"
 git push origin HEAD --tags
