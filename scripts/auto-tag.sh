@@ -14,7 +14,7 @@ sed -i -E "s/\"version\":.*/\"version\": \"$bumped_tag\",/" package.json
 
 git config --global user.email "safal.pandey.sp@gmail.com"
 git config --global user.name "Safal Raj Pandey"
-git commit -m "$bumped_tag
+git commit -am "$bumped_tag
 
 [skip release]"
 git tag "$bumped_tag"
