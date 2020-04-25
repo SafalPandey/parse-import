@@ -1,5 +1,5 @@
 {
-  "name": "parse-imports",
+  "name": "parse-import",
   "version": "0.0.2",
   "description": "A tool to help parse imports and all the dependencies associated with a file.",
   "main": "parse-import",
