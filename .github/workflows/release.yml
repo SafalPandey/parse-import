@@ -5,7 +5,7 @@ on:
       - master
 
 jobs:
-  tag:
+  goreleaser:
     runs-on: ubuntu-latest
     steps:
       -
@@ -19,13 +19,6 @@ jobs:
       -
         name: Bump tag
         run: ./scripts/auto-tag.sh
-
-  goreleaser:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
       -
         name: Unshallow
         run: git fetch --prune --unshallow
@@ -39,7 +32,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v1
         with:
           version: latest
-          args: release --rm-dist
-          key: ${{ secrets.YOUR_PRIVATE_KEY }}
+          args: --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
