@@ -72,3 +72,27 @@ func FindNamedMatches(regex *regexp.Regexp, str string) map[string]string {
 
 	return results
 }
+
+// FindAllNamedMatches creates a slice of maps of submatches and returns the slice.
+func FindAllNamedMatches(regex *regexp.Regexp, str string) []map[string]string {
+	matches := regex.FindAllStringSubmatch(str, -1)
+	subexpNames := regex.SubexpNames()
+
+	var result []map[string]string
+
+	for _, match := range matches {
+		matchMap := map[string]string{}
+
+		for i, name := range match {
+			val, exists := matchMap[subexpNames[i]]
+
+			if !exists || val == "" {
+				matchMap[subexpNames[i]] = name
+			}
+		}
+
+		result = append(result, matchMap)
+	}
+
+	return result
+}

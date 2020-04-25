@@ -10,21 +10,21 @@ import (
 
 // ImportPatternMap map constant
 var ImportPatternMap = map[string][]string{
-	"ts": []string{
-		`^import (?P<name>.+)\s*from\s+(?P<module>\S+)`,
+	"ts": {
+		`^import (?P<name>[^;]+)\s*from\s+['"](?P<module>\S+)['"]`,
 		`^\s*(?:const|let|var)\s+(?P<name>\S+)\s*=\s*require\((?P<module>\S+)\)`,
 		`^\s*(?:const|let|var)\s+(?P<name>\S+)\s*=\s*\S+\(\(\)\s*=>\s*import\((?P<module>\S+)\)\)`,
 	},
-	"py": []string{
-		`(?sm)(?:^import\s+(?P<module>\S+)`,
+	"py": {
+		`^import\s+(?P<module>\S+)`,
 		`^from (?P<module>\S+)\s*import\s+(?P<name>\S+)`,
 	},
 }
 
 // ExtensionMap map constant
 var ExtensionMap = map[string][]string{
-	"ts": []string{"/index.ts", "/index.tsx", "/index.js", "", ".tsx", ".ts", ".js", ".json"},
-	"py": []string{".py", "main.py", ""},
+	"ts": {"/index.ts", "/index.tsx", "/index.js", "", ".tsx", ".ts", ".js", ".json"},
+	"py": {".py", "main.py", ""},
 }
 
 // SplitCharMap map constant

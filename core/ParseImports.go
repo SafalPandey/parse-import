@@ -1,8 +1,8 @@
 package core
 
 import (
-	"bufio"
 	"errors"
+	"io/ioutil"
 	"math"
 	"os"
 	"path"
@@ -72,77 +72,42 @@ func subParse(files []string, infoChan chan<- []types.ImportInfo, parseGrp *sync
 func getImports(fileName string) []types.ImportInfo {
 	var imports []types.ImportInfo
 
-	file, err := os.Open(fileName)
+	contents, err := ioutil.ReadFile(fileName)
 	utils.CheckError(err)
 
-	defer file.Close()
+	allMatches := utils.FindAllNamedMatches(ImportPattern, string(contents))
 
-	lineNum := 1
-	scanner := bufio.NewScanner(file)
-	scanner.Split(utils.GetSplitterFunc(SplitChar))
+	for _, submatches := range allMatches {
+		name := submatches["name"]
+		module := submatches["module"]
 
-	for scanner.Scan() {
-		line := scanner.Text()
-		submatches := utils.FindNamedMatches(ImportPattern, line)
+		modulePath := strings.Join(strings.Split(strings.Trim(module, "'\";"), PathDelimiter), "/")
 
-		if len(submatches) != 0 {
-			name := submatches["name"]
-			module := submatches["module"]
-			importedFilePath := strings.Join(
-				strings.Split(
-					strings.Trim(module, "'\";"),
-					PathDelimiter,
-				),
-				"/",
-			)
+		isDir := false
+		isRel := utils.IsRel(modulePath)
+		pathIsFromBaseDir, baseDir := utils.StartsWithAnyOf(LocalDirs, modulePath, "/")
 
-			isDir := false
-
-			isRel := utils.IsRel(importedFilePath)
-			pathIsFromBaseDir, baseDir := utils.StartsWithAnyOf(LocalDirs, importedFilePath, "/")
-
-			if isRel || pathIsFromBaseDir {
-				if pathIsFromBaseDir {
-					importedFilePath = path.Join(BaseDirAbsPathMap[baseDir], importedFilePath)
-				} else {
-					importedFilePath = path.Join(path.Dir(fileName), importedFilePath)
-				}
-
-				i := 0
-				ext := ""
-				done := false
-
-				for !done {
-					done, ext, err = getExt(importedFilePath, i)
-					utils.CheckError(err)
-					i++
-				}
-
-				fi, err := os.Stat(importedFilePath + ext)
-
-				if err == nil && fi.IsDir() {
-					isDir = true
-					importedFilePath += "/"
-				} else {
-					importedFilePath += ext
-				}
+		if isRel || pathIsFromBaseDir {
+			if pathIsFromBaseDir {
+				modulePath = path.Join(BaseDirAbsPathMap[baseDir], modulePath)
+			} else {
+				modulePath = path.Join(path.Dir(fileName), modulePath)
 			}
 
-			imports = append(imports, types.ImportInfo{
-				Path:  importedFilePath,
-				IsDir: isDir,
-				Importers: []types.ImportedIn{
-					{
-						Name:   name,
-						Module: module,
-						Line:   lineNum,
-						Path:   fileName,
-					},
-				},
-			})
+			modulePath, isDir = getFilePath(modulePath)
 		}
 
-		lineNum++
+		imports = append(imports, types.ImportInfo{
+			Path:  modulePath,
+			IsDir: isDir,
+			Importers: []types.ImportedIn{
+				{
+					Name:   name,
+					Module: module,
+					Path:   fileName,
+				},
+			},
+		})
 	}
 
 	return imports
@@ -161,8 +126,10 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 
 		if path.IsAbs(p.Path) {
 			isLocal = true
-			localPaths = append(localPaths, p.Path)
-			// importMap[p.Path] = utils.BuildNestedMap(importMap[p.Path], strings.Split(p.Path, "/")[1:], p)
+
+			if !p.IsDir {
+				localPaths = append(localPaths, p.Path)
+			}
 		}
 
 		importMap[p.Path] = types.MapNode{
@@ -171,7 +138,7 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 			Info: types.ImportInfo{
 				Path:      p.Path,
 				IsDir:     p.IsDir,
-				Importers: append(p.Importers, importedIn...),
+				Importers: append(importedIn, p.Importers...),
 			},
 		}
 	}
@@ -179,16 +146,19 @@ func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]st
 	return localPaths, importMap
 }
 
-func getExt(fpath string, count int) (bool, string, error) {
-	if count >= len(Extensions) {
-		return false, "", errors.New("Oops no more extensions available: " + fpath)
+// Iterates over Extensions (languageSpecific) and
+// returns filePath and isDir boolean if a file exists
+// throws error if no file is found.
+func getFilePath(fpath string) (string, bool) {
+	for i := range Extensions {
+		path := fpath + Extensions[i]
+
+		fi, err := os.Stat(path)
+
+		if err == nil {
+			return path, fi.IsDir()
+		}
 	}
 
-	_, err := os.Stat(fpath + Extensions[count])
-
-	if err != nil {
-		return false, Extensions[count], nil
-	}
-
-	return true, Extensions[count], nil
+	panic(errors.New("Oops no more extensions available: " + fpath))
 }
