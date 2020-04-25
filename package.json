@@ -1,0 +1,32 @@
+{
+  "name": "parse-import",
+  "version": "0.0.2",
+  "description": "A tool to help parse imports and all the dependencies associated with a file.",
+  "main": "parse-import",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "postinstall": "go-npm install",
+    "preuninstall": "go-npm uninstall",
+    "test": "go build -o parse-import && ./parse-import -h"
+  },
+  "goBinary": {
+    "name": "parse-import",
+    "path": "./node_modules/bin",
+    "url": "https://github.com/SafalPandey/parse-import/releases/download/{{version}}/parse-import_{{version}}_{{platform}}_{{arch}}.tar.gz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SafalPandey/parse-import.git"
+  },
+  "author": "Safal Raj Pandey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SafalPandey/parse-import/issues"
+  },
+  "homepage": "https://github.com/SafalPandey/parse-import#readme",
+  "dependencies": {
+    "go-npm": "^0.1.9"
+  }
+}
