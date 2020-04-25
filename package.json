@@ -6,6 +6,9 @@
   "directories": {
     "test": "tests"
   },
+  "bin": {
+    "parse-import": "./node_modules/.bin/parse-import"
+  },
   "scripts": {
     "postinstall": "go-npm install",
     "preuninstall": "go-npm uninstall",
