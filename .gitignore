@@ -1,4 +1,5 @@
-imports.json
-node_modules/
+bin/
 dist
+imports.json
 parse-import
+node_modules/
