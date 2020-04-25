@@ -11,12 +11,12 @@ import (
 // ImportPatternMap map constant
 var ImportPatternMap = map[string][]string{
 	"ts": {
-		`^import (?P<name>.+)\s*from\s+(?P<module>\S+)`,
+		`^import (?P<name>[^;]+)\s*from\s+['"](?P<module>\S+)['"]`,
 		`^\s*(?:const|let|var)\s+(?P<name>\S+)\s*=\s*require\((?P<module>\S+)\)`,
 		`^\s*(?:const|let|var)\s+(?P<name>\S+)\s*=\s*\S+\(\(\)\s*=>\s*import\((?P<module>\S+)\)\)`,
 	},
 	"py": {
-		`(?sm)(?:^import\s+(?P<module>\S+)`,
+		`^import\s+(?P<module>\S+)`,
 		`^from (?P<module>\S+)\s*import\s+(?P<name>\S+)`,
 	},
 }
