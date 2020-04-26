@@ -19,9 +19,27 @@ func ParseImport(files []string, importMap map[string]interface{}) {
 
 	parsedMap := make(map[string]bool)
 	infoChan := make(chan []types.ImportInfo)
+	invalidEntrypointMap := make(map[string]string)
 
 	for _, file := range files {
+		fi, err := os.Stat(file)
+		utils.CheckError(err)
+
+		if fi.IsDir() {
+			invalidEntrypointMap[file] = "Entrypoint cannot be a directory. Please pass a file instead."
+		}
+
 		parsedMap[file] = true
+	}
+
+	if len(invalidEntrypointMap) > 0 {
+		message := "Entrypoint is invalid:\n"
+
+		for file, errMsg := range invalidEntrypointMap {
+			message += "  \"" + file + "\" <- " + errMsg + "\n"
+		}
+
+		panic(message)
 	}
 
 	parseGrp.Add(1)
