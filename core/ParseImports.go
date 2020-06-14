@@ -183,3 +183,46 @@ func getFilePath(fpath string) (string, bool) {
 
 	panic(errors.New("Oops no more extensions available: " + fpath))
 }
+
+// ValidateEntrypoints checks entrypoints to ensure they are valid
+func ValidateEntrypoints(files []string) {
+	invalidEntrypointMap := make(map[string]string)
+
+	for _, file := range files {
+		fi, err := os.Stat(file)
+		utils.CheckError(err)
+
+		if fi.IsDir() {
+			invalidEntrypointMap[file] = "Entrypoint cannot be a directory. Please pass a file instead."
+		}
+	}
+
+	if len(invalidEntrypointMap) > 0 {
+		message := "Entrypoint is invalid:\n"
+
+		for file, errMsg := range invalidEntrypointMap {
+			message += "  \"" + file + "\" <- " + errMsg + "\n"
+		}
+
+		panic(message)
+	}
+}
+
+// CreateEntrypointMap creates a map of supplied entrypoints assuming they are local
+func CreateEntrypointMap(entrypoints []string) map[string]interface{} {
+	entrypointMap := make(map[string]interface{})
+
+	for _, file := range entrypoints {
+		entrypointMap[file] = types.MapNode{
+			IsLocal: true,
+			Path:    file,
+			Info: types.ImportInfo{
+				Path:      file,
+				IsDir:     false,
+				Importers: []types.ImportedIn{},
+			},
+		}
+	}
+
+	return entrypointMap
+}
