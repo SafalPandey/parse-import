@@ -41,89 +41,102 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
 
 ```json
 {
-  "/path/to/baseDir/ablah/abc.py": {
-    "IsLocal": true,
-    "Path": "/path/to/baseDir/ablah/abc.py",
-    "Info": {
+  "entrypoints": {
+    "/path/to/baseDir/main.py": {
+      "IsLocal": true,
+      "Path": "/path/to/baseDir/main.py",
+      "Info": {
+        "Path": "/path/to/baseDir/main.py",
+        "IsDir": false,
+        "Importers": []
+      }
+    },
+  },
+  "imports": {
+    "/path/to/baseDir/ablah/abc.py": {
+      "IsLocal": true,
       "Path": "/path/to/baseDir/ablah/abc.py",
-      "IsDir": false,
-      "Importers": [
-        {
-          "Name": "some2",
-          "Module": "ablah.abc",
-          "Path": "/path/to/baseDir/main.py"
-        }
-      ]
-    }
-  },
-  "/path/to/baseDir/utils/blahhah/something/": {
-    "IsLocal": true,
-    "Path": "/path/to/baseDir/utils/blahhah/something/",
-    "Info": {
+      "Info": {
+        "Path": "/path/to/baseDir/ablah/abc.py",
+        "IsDir": false,
+        "Importers": [
+          {
+            "Name": "some2",
+            "Module": "ablah.abc",
+            "Path": "/path/to/baseDir/main.py"
+          }
+        ]
+      }
+    },
+    "/path/to/baseDir/utils/blahhah/something/": {
+      "IsLocal": true,
       "Path": "/path/to/baseDir/utils/blahhah/something/",
-      "IsDir": true,
-      "Importers": [
-        {
-          "Name": "ess",
-          "Module": "utils.blahhah.something",
-          "Path": "/path/to/baseDir/main.py"
-        }
-      ]
-    }
-  },
-  "/path/to/baseDir/utils/blahhah/uss.py": {
-    "IsLocal": true,
-    "Path": "/path/to/baseDir/utils/blahhah/uss.py",
-    "Info": {
+      "Info": {
+        "Path": "/path/to/baseDir/utils/blahhah/something/",
+        "IsDir": true,
+        "Importers": [
+          {
+            "Name": "ess",
+            "Module": "utils.blahhah.something",
+            "Path": "/path/to/baseDir/main.py"
+          }
+        ]
+      }
+    },
+    "/path/to/baseDir/utils/blahhah/uss.py": {
+      "IsLocal": true,
       "Path": "/path/to/baseDir/utils/blahhah/uss.py",
-      "IsDir": false,
-      "Importers": [
-        {
-          "Name": "some3",
-          "Module": "utils.blahhah.uss",
-          "Path": "/path/to/baseDir/main.py"
-        }
-      ]
-    }
-  },
-  "/path/to/baseDir/utils/utils.py": {
-    "IsLocal": true,
-    "Path": "/path/to/baseDir/utils/utils.py",
-    "Info": {
+      "Info": {
+        "Path": "/path/to/baseDir/utils/blahhah/uss.py",
+        "IsDir": false,
+        "Importers": [
+          {
+            "Name": "some3",
+            "Module": "utils.blahhah.uss",
+            "Path": "/path/to/baseDir/main.py"
+          }
+        ]
+      }
+    },
+    "/path/to/baseDir/utils/utils.py": {
+      "IsLocal": true,
       "Path": "/path/to/baseDir/utils/utils.py",
-      "IsDir": false,
-      "Importers": [
-        {
-          "Name": "some",
-          "Module": "utils.utils",
-          "Path": "/path/to/baseDir/ablah/abc.py"
-        },
-        {
-          "Name": "some",
-          "Module": "utils.utils",
-          "Path": "/path/to/baseDir/utils/blahhah/uss.py"
-        },
-        {
-          "Name": "some",
-          "Module": "utils.utils",
-          "Path": "/path/to/baseDir/main.py"
-        }
-      ]
-    }
-  },
-  "datetime": {
-    "IsLocal": false,
-    "Path": "datetime",
-    "Info": {
+      "Info": {
+        "Path": "/path/to/baseDir/utils/utils.py",
+        "IsDir": false,
+        "Importers": [
+          {
+            "Name": "some",
+            "Module": "utils.utils",
+            "Path": "/path/to/baseDir/ablah/abc.py"
+          },
+          {
+            "Name": "some",
+            "Module": "utils.utils",
+            "Path": "/path/to/baseDir/utils/blahhah/uss.py"
+          },
+          {
+            "Name": "some",
+            "Module": "utils.utils",
+            "Path": "/path/to/baseDir/main.py"
+          }
+        ]
+      }
+    },
+    "datetime": {
+      "IsLocal": false,
       "Path": "datetime",
-      "IsDir": false,
-      "Importers": [
-        {
-          "Name": "datetime",
-          "Module": "datetime",
-          "Path": "/path/to/baseDir/utils/blahhah/uss.py"
-        }
-      ]
+      "Info": {
+        "Path": "datetime",
+        "IsDir": false,
+        "Importers": [
+          {
+            "Name": "datetime",
+            "Module": "datetime",
+            "Path": "/path/to/baseDir/utils/blahhah/uss.py"
+          }
+        ]
+      }
     }
   }
 }
