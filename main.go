@@ -21,8 +21,6 @@ func main() {
 	var outputFile string
 	var entryPoint string
 
-	importMap := make(map[string]interface{})
-
 	flag.BoolVar(&showHelp, "h", false, "Show usage")
 	flag.StringVar(&filename, "f", "", "File to parse")
 	flag.StringVar(&core.Language, "l", "ts", "Language to parse")
@@ -52,11 +50,21 @@ func main() {
 		core.FindLocalDirs(entryPoint)
 	}
 
+	core.ValidateEntrypoints(names)
+	entrypointMap := core.CreateEntrypointMap(names)
+
 	log.Printf("Parsing imports for: %s", names)
-	core.ParseImport(names, importMap)
+	importMap := core.ParseImport(names)
 	log.Printf("Imports detected: %d", len(importMap))
 
-	str, err := json.MarshalIndent(importMap, "", "  ")
+	str, err := json.MarshalIndent(
+		map[string]interface{}{
+			"entrypoints": entrypointMap,
+			"imports":     importMap,
+		},
+		"",
+		"  ",
+	)
 	utils.CheckError(err)
 
 	log.Printf("Writing output to: %s", outputFile)
