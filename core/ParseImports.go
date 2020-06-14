@@ -13,11 +13,12 @@ import (
 	"../utils"
 )
 
-// ParseImport will mutate the passed map with all the dependent imports and their info
-func ParseImport(files []string, importMap map[string]interface{}) {
+// ParseImport will create a map of imports found in provided files and their info
+func ParseImport(files []string) map[string]interface{} {
 	var parseGrp sync.WaitGroup
 
 	parsedMap := make(map[string]bool)
+	importMap := make(map[string]interface{})
 	infoChan := make(chan []types.ImportInfo)
 	invalidEntrypointMap := make(map[string]string)
 
@@ -65,6 +66,8 @@ func ParseImport(files []string, importMap map[string]interface{}) {
 
 	parseGrp.Wait()
 	close(infoChan)
+
+	return importMap
 }
 
 func parse(files []string, infoChan chan<- []types.ImportInfo, parseGrp *sync.WaitGroup) {
