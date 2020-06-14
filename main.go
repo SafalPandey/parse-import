@@ -57,7 +57,14 @@ func main() {
 	importMap := core.ParseImport(names)
 	log.Printf("Imports detected: %d", len(importMap))
 
-	str, err := json.MarshalIndent(importMap, "", "  ")
+	str, err := json.MarshalIndent(
+		map[string]interface{}{
+			"entrypoints": entrypointMap,
+			"imports":     importMap,
+		},
+		"",
+		"  ",
+	)
 	utils.CheckError(err)
 
 	log.Printf("Writing output to: %s", outputFile)
