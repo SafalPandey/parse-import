@@ -50,6 +50,9 @@ func main() {
 		core.FindLocalDirs(entryPoint)
 	}
 
+	core.ValidateEntrypoints(names)
+	entrypointMap := core.CreateEntrypointMap(names)
+
 	log.Printf("Parsing imports for: %s", names)
 	importMap := core.ParseImport(names)
 	log.Printf("Imports detected: %d", len(importMap))
