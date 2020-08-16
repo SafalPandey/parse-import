@@ -124,32 +124,36 @@ func getImports(fileName string) []types.ImportInfo {
 	})
 }
 
-func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]string, map[string]interface{}) {
+func updateMap(infos []types.ImportInfo, importMap map[string]interface{}) ([]string, map[string]interface{}) {
 	var localPaths []string
 
-	for _, p := range paths {
+	for _, i := range infos {
 		isLocal := false
+		var imports []string
 		var importedIn []types.ImportedIn
 
-		if importMap[p.Path] != nil {
-			importedIn = importMap[p.Path].(types.MapNode).Info.Importers
+		if importMap[i.Path] != nil {
+			imports = importMap[i.Path].(types.MapNode).Info.Imports
+			importedIn = importMap[i.Path].(types.MapNode).Info.Importers
 		}
 
-		if path.IsAbs(p.Path) {
+		if path.IsAbs(i.Path) {
 			isLocal = true
 
-			if !p.IsDir {
-				localPaths = append(localPaths, p.Path)
+			if !i.IsDir {
+				localPaths = append(localPaths, i.Path)
 			}
 		}
 
-		importMap[p.Path] = types.MapNode{
-			IsLocal: isLocal,
-			Path:    p.Path,
+		importMap[i.Path] = types.MapNode{
+			IsLocal:      isLocal,
+			Path:         i.Path,
+			IsEntrypoint: false,
 			Info: types.ImportInfo{
-				Path:      p.Path,
-				IsDir:     p.IsDir,
-				Importers: append(importedIn, p.Importers...),
+				Path:      i.Path,
+				IsDir:     i.IsDir,
+				Imports:   append(imports, i.Imports...),
+				Importers: append(importedIn, i.Importers...),
 			},
 		}
 	}
