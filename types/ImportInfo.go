@@ -4,5 +4,6 @@ package types
 type ImportInfo struct {
 	Path      string
 	IsDir     bool
+	Imports   []string
 	Importers []ImportedIn
 }
