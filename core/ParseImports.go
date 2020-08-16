@@ -74,6 +74,7 @@ func subParse(files []string, infoChan chan<- []types.ImportInfo, parseGrp *sync
 
 func getImports(fileName string) []types.ImportInfo {
 	var imports []types.ImportInfo
+	importPaths := []string{}
 
 	contents, err := ioutil.ReadFile(fileName)
 	utils.CheckError(err)
@@ -100,9 +101,12 @@ func getImports(fileName string) []types.ImportInfo {
 			modulePath, isDir = getFilePath(modulePath)
 		}
 
+		importPaths = append(importPaths, modulePath)
+
 		imports = append(imports, types.ImportInfo{
-			Path:  modulePath,
-			IsDir: isDir,
+			Path:    modulePath,
+			IsDir:   isDir,
+			Imports: []string{},
 			Importers: []types.ImportedIn{
 				{
 					Name:   name,
@@ -113,7 +117,11 @@ func getImports(fileName string) []types.ImportInfo {
 		})
 	}
 
-	return imports
+	return append(imports, types.ImportInfo{
+		Path:    fileName,
+		IsDir:   false,
+		Imports: importPaths,
+	})
 }
 
 func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]string, map[string]interface{}) {
