@@ -74,6 +74,7 @@ func subParse(files []string, infoChan chan<- []types.ImportInfo, parseGrp *sync
 
 func getImports(fileName string) []types.ImportInfo {
 	var imports []types.ImportInfo
+	importPaths := []string{}
 
 	contents, err := ioutil.ReadFile(fileName)
 	utils.CheckError(err)
@@ -100,9 +101,12 @@ func getImports(fileName string) []types.ImportInfo {
 			modulePath, isDir = getFilePath(modulePath)
 		}
 
+		importPaths = append(importPaths, modulePath)
+
 		imports = append(imports, types.ImportInfo{
-			Path:  modulePath,
-			IsDir: isDir,
+			Path:    modulePath,
+			IsDir:   isDir,
+			Imports: []string{},
 			Importers: []types.ImportedIn{
 				{
 					Name:   name,
@@ -113,35 +117,43 @@ func getImports(fileName string) []types.ImportInfo {
 		})
 	}
 
-	return imports
+	return append(imports, types.ImportInfo{
+		Path:    fileName,
+		IsDir:   false,
+		Imports: importPaths,
+	})
 }
 
-func updateMap(paths []types.ImportInfo, importMap map[string]interface{}) ([]string, map[string]interface{}) {
+func updateMap(infos []types.ImportInfo, importMap map[string]interface{}) ([]string, map[string]interface{}) {
 	var localPaths []string
 
-	for _, p := range paths {
+	for _, i := range infos {
 		isLocal := false
+		var imports []string
 		var importedIn []types.ImportedIn
 
-		if importMap[p.Path] != nil {
-			importedIn = importMap[p.Path].(types.MapNode).Info.Importers
+		if importMap[i.Path] != nil {
+			imports = importMap[i.Path].(types.MapNode).Info.Imports
+			importedIn = importMap[i.Path].(types.MapNode).Info.Importers
 		}
 
-		if path.IsAbs(p.Path) {
+		if path.IsAbs(i.Path) {
 			isLocal = true
 
-			if !p.IsDir {
-				localPaths = append(localPaths, p.Path)
+			if !i.IsDir {
+				localPaths = append(localPaths, i.Path)
 			}
 		}
 
-		importMap[p.Path] = types.MapNode{
-			IsLocal: isLocal,
-			Path:    p.Path,
+		importMap[i.Path] = types.MapNode{
+			IsLocal:      isLocal,
+			Path:         i.Path,
+			IsEntrypoint: false,
 			Info: types.ImportInfo{
-				Path:      p.Path,
-				IsDir:     p.IsDir,
-				Importers: append(importedIn, p.Importers...),
+				Path:      i.Path,
+				IsDir:     i.IsDir,
+				Imports:   append(imports, i.Imports...),
+				Importers: append(importedIn, i.Importers...),
 			},
 		}
 	}
@@ -190,21 +202,14 @@ func ValidateEntrypoints(files []string) {
 	}
 }
 
-// CreateEntrypointMap creates a map of supplied entrypoints assuming they are local
-func CreateEntrypointMap(entrypoints []string) map[string]interface{} {
-	entrypointMap := make(map[string]interface{})
-
+// SetEntrypoints creates a map of supplied entrypoints assuming they are local
+func SetEntrypoints(entrypoints []string, importMap map[string]interface{}) map[string]interface{} {
 	for _, file := range entrypoints {
-		entrypointMap[file] = types.MapNode{
-			IsLocal: true,
-			Path:    file,
-			Info: types.ImportInfo{
-				Path:      file,
-				IsDir:     false,
-				Importers: []types.ImportedIn{},
-			},
-		}
+		val := importMap[file].(types.MapNode)
+		val.IsEntrypoint = true
+
+		importMap[file] = val
 	}
 
-	return entrypointMap
+	return importMap
 }

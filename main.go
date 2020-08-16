@@ -16,6 +16,7 @@ func main() {
 	var names []string
 
 	var showHelp bool
+	var noIndent bool
 	var filename string
 	var tsconfig string
 	var outputFile string
@@ -27,6 +28,7 @@ func main() {
 	flag.StringVar(&entryPoint, "entry-point", "", "Path to main.py")
 	flag.StringVar(&tsconfig, "tsconfig", "", "Path to tsconfig file")
 	flag.StringVar(&outputFile, "o", defaultOutputFile, "Output file path")
+	flag.BoolVar(&noIndent, "no-indent", false, "Do not indent output file")
 	flag.Parse()
 
 	if showHelp {
@@ -51,20 +53,20 @@ func main() {
 	}
 
 	core.ValidateEntrypoints(names)
-	entrypointMap := core.CreateEntrypointMap(names)
 
 	log.Printf("Parsing imports for: %s", names)
 	importMap := core.ParseImport(names)
 	log.Printf("Imports detected: %d", len(importMap))
+	importMap = core.SetEntrypoints(names, importMap)
 
-	str, err := json.MarshalIndent(
-		map[string]interface{}{
-			"entrypoints": entrypointMap,
-			"imports":     importMap,
-		},
-		"",
-		"  ",
-	)
+	var err error
+	var content []byte
+
+	if noIndent {
+		content, err = json.Marshal(importMap)
+	} else {
+		content, err = json.MarshalIndent(importMap, "", "  ")
+	}
 	utils.CheckError(err)
 
 	log.Printf("Writing output to: %s", outputFile)
@@ -73,7 +75,7 @@ func main() {
 
 	defer f.Close()
 
-	_, err = f.Write(str)
+	_, err = f.Write(content)
 	utils.CheckError(err)
 
 	log.Printf("Done")
