@@ -48,7 +48,13 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
     "Info": {
       "Path": "/path/to/baseDir/main.py",
       "IsDir": false,
-      "Importers": []
+      "Imports": [
+        "/path/to/baseDir/ablah/abc.py",
+        "/path/to/baseDir/utils/blahhah/something/",
+        "/path/to/baseDir/utils/blahhah/uss.py",
+        "/path/to/baseDir/utils/utils.py",
+      ]
+      "Importers": null
     }
   },
   "/path/to/baseDir/ablah/abc.py": {
@@ -58,6 +64,7 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
     "Info": {
       "Path": "/path/to/baseDir/ablah/abc.py",
       "IsDir": false,
+      "Imports": ["/path/to/baseDir/utils/utils.py"],
       "Importers": [
         {
           "Name": "some2",
@@ -74,6 +81,7 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
     "Info": {
       "Path": "/path/to/baseDir/utils/blahhah/something/",
       "IsDir": true,
+      "Imports": null,
       "Importers": [
         {
           "Name": "ess",
@@ -90,6 +98,10 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
     "Info": {
       "Path": "/path/to/baseDir/utils/blahhah/uss.py",
       "IsDir": false,
+      "Imports": [
+        "datetime",
+        "/path/to/baseDir/utils/utils.py"
+      ],
       "Importers": [
         {
           "Name": "some3",
@@ -106,6 +118,7 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
     "Info": {
       "Path": "/path/to/baseDir/utils/utils.py",
       "IsDir": false,
+      "Imports": []
       "Importers": [
         {
           "Name": "some",
@@ -132,6 +145,7 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
     "Info": {
       "Path": "datetime",
       "IsDir": false,
+      "Imports": null,
       "Importers": [
         {
           "Name": "datetime",
