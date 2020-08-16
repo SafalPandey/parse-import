@@ -41,102 +41,104 @@ go run main.go -f /path/to/main.py -l py -entryPoint /path/to/main.py
 
 ```json
 {
-  "entrypoints": {
-    "/path/to/baseDir/main.py": {
-      "IsLocal": true,
+  "/path/to/baseDir/main.py": {
+    "IsLocal": true,
+    "IsEntrypoint": true,
+    "Path": "/path/to/baseDir/main.py",
+    "Info": {
       "Path": "/path/to/baseDir/main.py",
-      "Info": {
-        "Path": "/path/to/baseDir/main.py",
-        "IsDir": false,
-        "Importers": []
-      }
-    },
+      "IsDir": false,
+      "Importers": []
+    }
   },
-  "imports": {
-    "/path/to/baseDir/ablah/abc.py": {
-      "IsLocal": true,
+  "/path/to/baseDir/ablah/abc.py": {
+    "IsLocal": true,
+    "IsEntrypoint": false,
+    "Path": "/path/to/baseDir/ablah/abc.py",
+    "Info": {
       "Path": "/path/to/baseDir/ablah/abc.py",
-      "Info": {
-        "Path": "/path/to/baseDir/ablah/abc.py",
-        "IsDir": false,
-        "Importers": [
-          {
-            "Name": "some2",
-            "Module": "ablah.abc",
-            "Path": "/path/to/baseDir/main.py"
-          }
-        ]
-      }
-    },
-    "/path/to/baseDir/utils/blahhah/something/": {
-      "IsLocal": true,
+      "IsDir": false,
+      "Importers": [
+        {
+          "Name": "some2",
+          "Module": "ablah.abc",
+          "Path": "/path/to/baseDir/main.py"
+        }
+      ]
+    }
+  },
+  "/path/to/baseDir/utils/blahhah/something/": {
+    "IsLocal": true,
+    "IsEntrypoint": false,
+    "Path": "/path/to/baseDir/utils/blahhah/something/",
+    "Info": {
       "Path": "/path/to/baseDir/utils/blahhah/something/",
-      "Info": {
-        "Path": "/path/to/baseDir/utils/blahhah/something/",
-        "IsDir": true,
-        "Importers": [
-          {
-            "Name": "ess",
-            "Module": "utils.blahhah.something",
-            "Path": "/path/to/baseDir/main.py"
-          }
-        ]
-      }
-    },
-    "/path/to/baseDir/utils/blahhah/uss.py": {
-      "IsLocal": true,
+      "IsDir": true,
+      "Importers": [
+        {
+          "Name": "ess",
+          "Module": "utils.blahhah.something",
+          "Path": "/path/to/baseDir/main.py"
+        }
+      ]
+    }
+  },
+  "/path/to/baseDir/utils/blahhah/uss.py": {
+    "IsLocal": true,
+    "IsEntrypoint": false,
+    "Path": "/path/to/baseDir/utils/blahhah/uss.py",
+    "Info": {
       "Path": "/path/to/baseDir/utils/blahhah/uss.py",
-      "Info": {
-        "Path": "/path/to/baseDir/utils/blahhah/uss.py",
-        "IsDir": false,
-        "Importers": [
-          {
-            "Name": "some3",
-            "Module": "utils.blahhah.uss",
-            "Path": "/path/to/baseDir/main.py"
-          }
-        ]
-      }
-    },
-    "/path/to/baseDir/utils/utils.py": {
-      "IsLocal": true,
+      "IsDir": false,
+      "Importers": [
+        {
+          "Name": "some3",
+          "Module": "utils.blahhah.uss",
+          "Path": "/path/to/baseDir/main.py"
+        }
+      ]
+    }
+  },
+  "/path/to/baseDir/utils/utils.py": {
+    "IsLocal": true,
+    "IsEntrypoint": false,
+    "Path": "/path/to/baseDir/utils/utils.py",
+    "Info": {
       "Path": "/path/to/baseDir/utils/utils.py",
-      "Info": {
-        "Path": "/path/to/baseDir/utils/utils.py",
-        "IsDir": false,
-        "Importers": [
-          {
-            "Name": "some",
-            "Module": "utils.utils",
-            "Path": "/path/to/baseDir/ablah/abc.py"
-          },
-          {
-            "Name": "some",
-            "Module": "utils.utils",
-            "Path": "/path/to/baseDir/utils/blahhah/uss.py"
-          },
-          {
-            "Name": "some",
-            "Module": "utils.utils",
-            "Path": "/path/to/baseDir/main.py"
-          }
-        ]
-      }
-    },
-    "datetime": {
-      "IsLocal": false,
+      "IsDir": false,
+      "Importers": [
+        {
+          "Name": "some",
+          "Module": "utils.utils",
+          "Path": "/path/to/baseDir/ablah/abc.py"
+        },
+        {
+          "Name": "some",
+          "Module": "utils.utils",
+          "Path": "/path/to/baseDir/utils/blahhah/uss.py"
+        },
+        {
+          "Name": "some",
+          "Module": "utils.utils",
+          "Path": "/path/to/baseDir/main.py"
+        }
+      ]
+    }
+  },
+  "datetime": {
+    "IsLocal": false,
+    "IsEntrypoint": false,
+    "Path": "datetime",
+    "Info": {
       "Path": "datetime",
-      "Info": {
-        "Path": "datetime",
-        "IsDir": false,
-        "Importers": [
-          {
-            "Name": "datetime",
-            "Module": "datetime",
-            "Path": "/path/to/baseDir/utils/blahhah/uss.py"
-          }
-        ]
-      }
+      "IsDir": false,
+      "Importers": [
+        {
+          "Name": "datetime",
+          "Module": "datetime",
+          "Path": "/path/to/baseDir/utils/blahhah/uss.py"
+        }
+      ]
     }
   }
 }
@@ -210,6 +212,7 @@ Outputs a json file of following format:
     ```json
     "redux-persist": {
         "IsLocal": false,
+        "IsEntrypoint": false,
         "Path": "redux-persist",
         "Info": {
             "Path": "redux-persist",
@@ -235,6 +238,7 @@ Outputs a json file of following format:
     ```json
     "/path/to/src/components/home/common/CalendarIcon.tsx": {
         "IsLocal": true,
+        "IsEntrypoint": false,
         "Path": "/path/to/src/components/home/common/CalendarIcon.tsx",
         "Info": {
             "Path": "/path/to/src/components/home/common/CalendarIcon.tsx",
