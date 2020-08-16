@@ -202,21 +202,14 @@ func ValidateEntrypoints(files []string) {
 	}
 }
 
-// CreateEntrypointMap creates a map of supplied entrypoints assuming they are local
-func CreateEntrypointMap(entrypoints []string) map[string]interface{} {
-	entrypointMap := make(map[string]interface{})
-
+// SetEntrypoints creates a map of supplied entrypoints assuming they are local
+func SetEntrypoints(entrypoints []string, importMap map[string]interface{}) map[string]interface{} {
 	for _, file := range entrypoints {
-		entrypointMap[file] = types.MapNode{
-			IsLocal: true,
-			Path:    file,
-			Info: types.ImportInfo{
-				Path:      file,
-				IsDir:     false,
-				Importers: []types.ImportedIn{},
-			},
-		}
+		val := importMap[file].(types.MapNode)
+		val.IsEntrypoint = true
+
+		importMap[file] = val
 	}
 
-	return entrypointMap
+	return importMap
 }
