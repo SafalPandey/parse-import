@@ -1,6 +1,6 @@
 {
   "name": "parse-import",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "A tool to help parse imports and all the dependencies associated with a file.",
   "main": "parse-import",
   "directories": {
