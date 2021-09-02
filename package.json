@@ -32,6 +32,6 @@
   "dependencies": {
     "mkdirp": "^0.5.1",
     "request": "^2.81.0",
-    "tar": "^4.4.15"
+    "tar": "^4.4.18"
   }
 }
